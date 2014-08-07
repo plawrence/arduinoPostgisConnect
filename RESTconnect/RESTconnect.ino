@@ -2,6 +2,7 @@
 #include <ccspi.h>
 #include <SPI.h>
 #include <sha256.h>
+#include "RESTpasswords.h"
 
 #define ADAFRUIT_CC3000_IRQ   3 // MUST be an interrupt pin!
 #define ADAFRUIT_CC3000_VBAT  5 // These can be
@@ -12,22 +13,22 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(
   ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
   SPI_CLOCK_DIVIDER);
   
-#define WLAN_SSID     "thenetwork"  // 32 characters max
-#define WLAN_PASS     "thepass"
-#define WLAN_SECURITY WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
+//#define WLAN_SSID     "thenetwork"  // 32 characters max
+//#define WLAN_PASS     "thepass"
+#define WLAN_SECURITY WLAN_SEC_UNSEC //WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
 
 const char PROGMEM
   // RESTapi application credentials -- see notes above -- DO NOT SHARE.
-  consumer_key[]  = "PUT_YOUR_CONSUMER_KEY_HERE",
-  access_token[]  = "PUT_YOUR_ACCESS_TOKEN_HERE",
-  signingKey[]    = "PUT_YOUR_CONSUMER_SECRET_HERE"      // Consumer secret
-    "&"             "PUT_YOUR_ACCESS_TOKEN_SECRET_HERE", // Access token secret
+  //consumer_key[]  = "PUT_YOUR_CONSUMER_KEY_HERE",
+  //access_token[]  = "PUT_YOUR_ACCESS_TOKEN_HERE",
+  //signingKey[]    = "PUT_YOUR_CONSUMER_SECRET_HERE"      // Consumer secret
+   // "&"             "PUT_YOUR_ACCESS_TOKEN_SECRET_HERE", // Access token secret
   // The ampersand is intentional -- do not delete!
   // Other globals.  You probably won't need to change these. ---------------
   endpoint[]      = "http://theserverip",
   agent[]         = "Arduino-Upload-Test v1.0";
-const char
-  host[]          = "serverip";
+//const char
+ // host[]          = "serverip";
 const unsigned long
   dhcpTimeout     = 60L * 1000L, // Max time to wait for 	address from DHCP
   connectTimeout  = 15L * 1000L, // Max time to wait for server connection
@@ -91,8 +92,8 @@ void loop(){
     unsigned long		ip;
     String data;
     uint8_t *hash;
-    String hashpass;
-    hashpass+="yourpassword";
+    //String hashpass;
+    //hashpass+="yourpassword";
     data+="";
     data+="data=12.7"; // Use HTML encoding for commas.  This is where the data stream will be inserted.
     data+="&loc_id=1";
@@ -122,8 +123,11 @@ void loop(){
 	
 	if (client.connected()) {
 		Serial.println("connected, issuing http request");
-		client.println("POST http://theserverip/tdisplay.php  HTTP/1.1");
-		client.println("Host: theserverip");
+		client.print("POST http://");
+                client.print(host);
+                client.println("/tdisplay.php  HTTP/1.1");
+		client.print("Host: ");
+                client.println(host);
 		client.println("Content-Type: application/x-www-form-urlencoded");
 		client.println("Connection: close");
 		client.print("Content-Length: ");
@@ -138,8 +142,11 @@ void loop(){
 		client.println();
 
 		//Prints your post request out for debugging
-		Serial.println("POST http://theserverip/tdisplay.php HTTP/1.1");
-		Serial.println("Host: theserverip");
+		Serial.print("POST http://");
+                Serial.print(host);
+                Serial.println("/tdisplay.php  HTTP/1.1");
+		Serial.print("Host: ");
+                Serial.println(host);
 		Serial.println("Content-Type: application/x-www-form-urlencoded");
 		Serial.println("Connection: close");
 		Serial.print("Content-Length: ");
