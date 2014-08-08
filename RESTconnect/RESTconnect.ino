@@ -15,12 +15,6 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(
   
 #define WLAN_SECURITY WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
 
-const char PROGMEM
-  // Other globals.  You probably won't need to change these. ---------------
-  endpoint[]      = "http://theserverip",
-  agent[]         = "Arduino-Upload-Test v1.0";
-//const char
- // host[]          = "serverip";
 const unsigned long
   dhcpTimeout     = 60L * 1000L, // Max time to wait for 	address from DHCP
   connectTimeout  = 15L * 1000L, // Max time to wait for server connection
@@ -129,7 +123,7 @@ void loop(){
 		//Prints your post request out for debugging
 		Serial.print("POST http://");
                 Serial.print(host);
-                Serial.println("/tdisplay.php  HTTP/1.1");
+                Serial.println("/postgisInsert.php  HTTP/1.1");
 		Serial.print("Host: ");
                 Serial.println(host);
 		Serial.println("Content-Type: application/x-www-form-urlencoded");
