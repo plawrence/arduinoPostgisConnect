@@ -13,7 +13,7 @@ Adafruit_CC3000 cc3000 = Adafruit_CC3000(
   ADAFRUIT_CC3000_CS, ADAFRUIT_CC3000_IRQ, ADAFRUIT_CC3000_VBAT,
   SPI_CLOCK_DIVIDER);
   
-#define WLAN_SECURITY WLAN_SEC_UNSEC //WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
+#define WLAN_SECURITY WLAN_SEC_WPA2 // WLAN_SEC_UNSEC/WLAN_SEC_WEP/WLAN_SEC_WPA/WLAN_SEC_WPA2
 
 const char PROGMEM
   // Other globals.  You probably won't need to change these. ---------------
@@ -82,12 +82,9 @@ uint8_t countdown = 23; // Countdown to next time server query (once per ~24hr)
 
 void loop(){
     unsigned long ip;
-    String data;
+    String data = "";
     uint8_t *hash;
-    unsigned long ipstore;
-    uint32_t ipstoreint;
-    data+="";
-    data+="data=12.7"; // Use HTML encoding for commas.  This is where the data stream will be inserted.
+    data+="data=13"; // Use HTML encoding for commas.  This is where the data stream will be inserted.
     data+="&loc_id=1";
     data+="&submit=Submit"; // Submitting data
   
@@ -96,16 +93,9 @@ void loop(){
     
 	
     Serial.println(F("Locating REST server..."));
-    Serial.println(host);
-    Serial.println(ip_to_int(host));
     //the below function doesn't seem to be working....
     cc3000.getHostByName((char *)host, &ip);
     //ip = 919130993;
-    ipstore = cc3000.getHostByName((char *)host, &ip);
-    ipstoreint = cc3000.getHostByName((char *)host, &ip);
-    Serial.println(ipstore);
-    Serial.println(ipstoreint);
-    Serial.println(ip);
     
     cc3000.printIPdotsRev(ip);
 
@@ -131,10 +121,9 @@ void loop(){
 		client.println();
                 Sha256.print(hashpass);
                 hash = Sha256.result();
-                String hashstr = String((int) hash);
 		client.print(data);
                 client.print("&hash=");
-                client.print(hashstr);
+                printClientHash(hash);
 		client.println();
 
 		//Prints your post request out for debugging
@@ -148,8 +137,9 @@ void loop(){
 		Serial.print("Content-Length: ");
 		Serial.println(data.length());
 		Serial.println();
-                Serial.println(hashstr);
 		Serial.print(data);
+                Serial.print("&hash=");
+                printHash(hash);
 		Serial.println();
 	}
 	delay(2000);
@@ -240,3 +230,20 @@ unsigned int ip_to_int (const char * ip)
     return v;
 }
 
+void printHash(uint8_t* hash) {
+  int i;
+  for (i=0; i<32; i++) {
+    Serial.print("0123456789abcdef"[hash[i]>>4]);
+    Serial.print("0123456789abcdef"[hash[i]&0xf]);
+  }
+  Serial.println();
+}
+
+void printClientHash(uint8_t* hash) {
+  int i;
+  for (i=0; i<32; i++) {
+    client.print("0123456789abcdef"[hash[i]>>4]);
+    client.print("0123456789abcdef"[hash[i]&0xf]);
+  }
+  client.println();
+}
