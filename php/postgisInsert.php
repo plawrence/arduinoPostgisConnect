@@ -1,6 +1,6 @@
 
 <?php
-  include 'RESTpasswords.php';
+  include '~/RESTpasswords.php';
   /*echo strval($_POST["data"]);*/
   //if(!$dbh){
   //  die("Error in connection: " . pg_last_error());
